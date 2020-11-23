@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <meta charset="utf-8"/>
+        <title>Simple Music Playground</title>
+        <script src="./doc/fabric.min.js"></script>
+        <style>
+            .customCanvasContainer1 {
+                display: inline;
+            }
+            
+            .customCanvasContainer2 {
+                left: 99px;
+            }
+
+            #canvases .row {
+                width: 1125px;
+            }
+
+            #canvases {
+                padding-right: 0px;
+            }
+
+           #mainCanvas {
+               overflow-y: scroll;
+               border: 1px solid black;
+           }
+
+           #noteLabels {
+               border: 1px solid black;
+           }
+        </style>
+    </head>
+
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="width: 1125px;">
+                    <a class="navbar-brand" href="#">Navbar</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarDropDown" aria-controls="navbarDropDown" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarDropDown">
+                        <ul class="navbar-nav mr-auto">
+                            <!-- <li class="nav-item active">
+                                <a class="nav-link" href="https://www.usca.edu" target="_blank">USCA</a>
+                            </li>
+                            <li class="nav-item font-weight-bold">
+                                <a class="nav-link" href="../index.html#introduction">Link to Introduction Section</a>
+                            </li>
+                            <li class="nav-item font-weight-bold">
+                                <a class="nav-link" href="../index.html#assignments">Link to Assignment Section</a>
+                            </li>
+                            <li class="nav-item font-weight-bold">
+                                <a class="nav-link" href="../index.html#contactInfo">Link to Contact Information</a>
+                            </li> -->
+                        </ul>
+                    </div>
+                </nav>
+            </div> 
+            <button id="clickMe">Click Me</button>
+        </div>
+    </div>
+    <div class="container" id="canvases" sytle="display: inline">
+        <!-- <div class="col">
+            <div class="row">
+                <canvas id="mainCanvas" width="1125px" height="800px"></canvas>     
+            </div>
+            <div class="row">
+                <canvas id="noteLabels" width="1125px" height="100px"></canvas>
+            </div>
+        </div>         -->
+        <canvas id="noteLabels" width="100px" height="875px"></canvas>
+        <canvas id="mainCanvas" width="1025px" height="875px"></canvas>  
+    </div>
+
+    <script>
+        let noteMap = new Map();
+            noteMap.set('C2',65.41)
+            noteMap.set('C#2/Db2',69.30)
+            noteMap.set('D2',73.42)
+            noteMap.set('D#2/Eb2',77.78)
+            noteMap.set('E2',82.41)
+            noteMap.set('F2',87.31)
+            noteMap.set('F#2/Gb2',92.50)
+            noteMap.set('G2',98.00)
+            noteMap.set('G#2/Ab2',103.83)
+            noteMap.set('A2',110.00)
+            noteMap.set('A#2/Bb2',116.54)
+            noteMap.set('B2',123.47)
+            noteMap.set('C3',130.81)
+            noteMap.set('C#3/Db3',138.59)
+            noteMap.set('D3',146.83)
+            noteMap.set('D#3/Eb3',155.56)
+            noteMap.set('E3',164.81)
+            noteMap.set('F3',174.61)
+            noteMap.set('F#3/Gb3',185.00)
+            noteMap.set('G3',196.00)
+            noteMap.set('G#3/Ab3',207.65)
+            noteMap.set('A3',220.00)
+            noteMap.set('A#3/Bb3',233.08)
+            noteMap.set('B3',246.94)
+            noteMap.set('C4',261.63)
+            noteMap.set('C#4/Db4',277.18)
+            noteMap.set('D4',293.66)
+            noteMap.set('D#4/Eb4',311.13)
+            noteMap.set('E4',329.63)
+            noteMap.set('F4',349.23)
+            noteMap.set('F#4/Gb4',369.99)
+            noteMap.set('G4',392.00)
+            noteMap.set('G#4/Ab4',415.30)
+            noteMap.set('A4',440.00)
+            noteMap.set('A#4/Bb4',466.16)
+            noteMap.set('B4',493.88)
+            noteMap.set('C5',523.25)
+            noteMap.set('C#5/Db5',554.37)
+            noteMap.set('D5',587.33)
+            noteMap.set('D#5/Eb5',622.25)
+            noteMap.set('E5',659.25)
+            noteMap.set('F5',698.46)
+            noteMap.set('F#5/Gb5',739.99)
+            noteMap.set('G5',783.99)
+            noteMap.set('G#5/Ab5',830.61)
+            noteMap.set('A5',880.00)
+            noteMap.set('A#5/Bb5',932.33)
+            noteMap.set('B5',987.77)
+            noteMap.set('C6',1046.50)
+
+        var tempo = 140;
+
+        var noteCanvas = new fabric.Canvas('noteLabels', { selection: false, containerClass: "customCanvasContainer1" });
+        var mainCanvas = new fabric.Canvas('mainCanvas', { selection: false, containerClass: "customCanvasContainer2" });
+        
+        var noteArray = ['G2','G#2/Ab2','A2','A#2/Bb2','B2','C3','C#3/Db3','D3','D#3/Eb3','E3','F3','F#3/Gb3','G3','G#3/Ab3','A3','A#3/Bb3','B3','C4','C#4/Db4','D4','D#4/Eb4','E4','F4','F#4/Gb4','G4','G#4/Ab4','A4','A#4/Bb4','B4','C5','C#5/Db5','D5','D#5/Eb5','E5','F5'];
+        var noteGroups = [];
+        // // noteArray.reverse();
+        // // noteFrequencies.reverse();
+
+        for(var i = 0; i < 875; i += 25)
+        {
+            var tempRect = new fabric.Textbox(noteArray[noteArray.length - 1], {
+                left: 0,
+                top: i,
+                originX: 'left', 
+                originY: 'top',
+                textAlign: 'center',
+                editable: false,
+                selectable: false,
+                fontSize: 15
+            });
+
+            tempRect.on('mouseover', function(e) {
+                playNoteNoCallBack(noteMap.get(e.target.text), 60 / tempo)
+            });
+
+            noteCanvas.add(new fabric.Line([0,i,100,i], {
+                selectable: false,
+                stroke: '#ccc'
+            }));
+
+            mainCanvas.add(new fabric.Line([0,i,1025,i], {
+                selectable: false,
+                stroke: '#ccc'
+            }));
+            
+            noteGroups.push({note: noteArray.pop(), canvasObject: tempRect});
+        }
+
+        for(var i = 0; i < noteGroups.length; i++)
+        {
+            noteCanvas.add(noteGroups[i].canvasObject);
+        }
+
+        // create web audio api context
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        var rawSongData = [['B4',8], ['B4',8], ['F#4/Gb4',8], ['F#4/Gb4',16], ['F#4/Gb4',16], ['A4',8], ['F#4/Gb4',8], ['E4',8], ['F#4/Gb4',8]];
+        
+        var songNotes = [];
+
+        //songNotes.reverse();
+
+        function prepSong() {
+            var tempArray = [...rawSongData];
+            while(tempArray.length > 0)
+            {
+                temp = tempArray.pop();
+                songNotes.push([noteMap.get(temp[0]), temp[1]]);
+            }           
+
+            //songNotes.reverse();
+            playSong();
+        }
+        //(256 / (note[1] * tempo))
+        function playSong() {
+            if(songNotes.length > 0) {
+                note = songNotes.pop();
+                playNote(note[0], 60 / tempo / (note[1] / 4 ), playSong);
+            }
+        }
+
+        function playNote(frequency, duration, callback) {
+            var osc = audioCtx.createOscillator();
+            var g = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.value = frequency;
+            osc.onended = callback;
+            osc.connect(g);
+            g.gain.value = 0.15;
+            g.connect(audioCtx.destination);
+            
+            osc.start(0);
+            osc.stop(audioCtx.currentTime + duration);                        
+        }
+
+        function playNoteNoCallBack(frequency, duration) {
+            var osc = audioCtx.createOscillator();
+            var g = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = frequency;
+            osc.connect(g);
+            g.gain.value = 0.15;
+            g.connect(audioCtx.destination);
+            
+            osc.start(0);
+            osc.stop(audioCtx.currentTime + duration);                        
+        }
+
+        document.getElementById("clickMe").addEventListener("click", prepSong, false);
+
+    </script>
+
+</html>

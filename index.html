@@ -5,13 +5,17 @@
         <meta charset="utf-8"/>
         <title>Simple Music Playground</title>
         <script src="./doc/fabric.min.js"></script>
+
+        <!--Custom Scrollbar-->
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/simplebar@latest/dist/simplebar.css"
+        />
+        <script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
+
         <style>
             .customCanvasContainer1 {
                 display: inline;
-            }
-            
-            .customCanvasContainer2 {
-                left: 99px;
             }
 
             #canvases .row {
@@ -22,14 +26,19 @@
                 padding-right: 0px;
             }
 
-           #mainCanvas {
-               overflow-y: scroll;
-               border: 1px solid black;
-           }
+            #mainCanvasDiv {
+                margin-left: 100px;
+                width: 1030px;
+                height: 875px;
+            }
 
-           #noteLabels {
-               border: 1px solid black;
-           }
+            #mainCanvas {
+                border: 1px solid black;
+            }
+
+            #noteLabels {
+                border: 1px solid black;
+            }
         </style>
     </head>
 
@@ -60,19 +69,21 @@
                 </nav>
             </div> 
             <button id="clickMe">Click Me</button>
+            <button id="saveSong">Read comment under this button </button>
+            <button id="playSong">Play Song</button>
+            <!-- Make sure to check for all collisions before saving-->
         </div>
     </div>
-    <div class="container" id="canvases" sytle="display: inline">
-        <!-- <div class="col">
-            <div class="row">
-                <canvas id="mainCanvas" width="1125px" height="800px"></canvas>     
-            </div>
-            <div class="row">
-                <canvas id="noteLabels" width="1125px" height="100px"></canvas>
-            </div>
-        </div>         -->
-        <canvas id="noteLabels" width="100px" height="875px"></canvas>
-        <canvas id="mainCanvas" width="1025px" height="875px"></canvas>  
+    <div class="container" id="canvases">
+        <div>
+            <canvas id="noteLabels" width="100px" height="875px"></canvas>
+        </div>
+        
+        <div id="mainCanvasDiv" data-simplebar>
+            <canvas id="mainCanvas" width="1025px" height="875px"></canvas> 
+        </div>
+        <!-- <canvas id="noteLabels" width="100px" height="875px"></canvas>
+        <canvas id="mainCanvas" width="1025px" height="875px"></canvas>  -->
     </div>
 
     <script>
@@ -127,17 +138,130 @@
             noteMap.set('B5',987.77)
             noteMap.set('C6',1046.50)
 
-        var tempo = 140;
+        var tempo = 140; //beats per minute
+        var beatsPerSecond = tempo / 60; //beats per second
+        var isShapeHover = false;
+        var willBeCollision = false;
+        var notesOnBoard = 35;
+        var canvasHeight = 875;
+        var keyboardBlockHeight = Math.floor(canvasHeight / notesOnBoard);
+        var quarterNoteLength = 50; //quarter and beat --> length
+        var totalDuration = 0;
+        var noteAdditionDisabled = false;
+        var notePixelLengths = [25/2, 25, 50, 100, 200];
+        var noteDurations = [16, 8, 4, 2, 1];
+
+        var noteArray = ['G2','G#2/Ab2','A2','A#2/Bb2','B2','C3','C#3/Db3','D3','D#3/Eb3','E3','F3','F#3/Gb3','G3','G#3/Ab3','A3','A#3/Bb3','B3','C4','C#4/Db4','D4','D#4/Eb4','E4','F4','F#4/Gb4','G4','G#4/Ab4','A4','A#4/Bb4','B4','C5','C#5/Db5','D5','D#5/Eb5','E5','F5'];
+        var freqArray = [98.00,103.83,110.00,116.54,123.47,130.81,138.59,146.83,155.56,164.81,174.61,185.00,196.00,207.65,220.00,233.08,246.94,261.63,277.18,293.66,311.13,329.63,349.23,369.99,392.00,415.30,440.00,466.16,493.88,523.25,554.37,587.33,622.25,659.25,698.46].reverse();
+        var noteGroups = [];
 
         var noteCanvas = new fabric.Canvas('noteLabels', { selection: false, containerClass: "customCanvasContainer1" });
         var mainCanvas = new fabric.Canvas('mainCanvas', { selection: false, containerClass: "customCanvasContainer2" });
-        
-        var noteArray = ['G2','G#2/Ab2','A2','A#2/Bb2','B2','C3','C#3/Db3','D3','D#3/Eb3','E3','F3','F#3/Gb3','G3','G#3/Ab3','A3','A#3/Bb3','B3','C4','C#4/Db4','D4','D#4/Eb4','E4','F4','F#4/Gb4','G4','G#4/Ab4','A4','A#4/Bb4','B4','C5','C#5/Db5','D5','D#5/Eb5','E5','F5'];
-        var noteGroups = [];
-        // // noteArray.reverse();
-        // // noteFrequencies.reverse();
 
-        for(var i = 0; i < 875; i += 25)
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        mainCanvas.on('mouse:down', function(e) {
+            
+            var currY = e.pointer.y;
+            var currX = e.pointer.x;
+            var willBeCollision = false;
+            var isExistingCollision = false;
+
+            if(isShapeHover || noteAdditionDisabled)
+            {
+                //console.log("clicked on an existing note")
+            }
+            else
+            {
+                //-=-=-= check if the placement of this note will collide with another AND for existing collisions due to resizing -=-=-=\\
+                var rectsToCheck = [];
+
+                mainCanvas.forEachObject(function(e) {
+                    if(e.get('type') == "rect")
+                    {
+                        rectsToCheck.push(e);
+                    }
+                });
+
+                //console.log(rectsToCheck);
+
+                var adjustedY = Math.floor(currY / keyboardBlockHeight) * keyboardBlockHeight;
+
+                rectsToCheck.forEach(function(e) {
+                    if( (currY >= e.top && currY <= (e.top + keyboardBlockHeight)) && ((currX + quarterNoteLength) >= e.left && (currX + quarterNoteLength) <= (e.left + quarterNoteLength)) )
+                    {
+                        willBeCollision = true;
+                    }
+                });
+                //-=-=-= end of collision check -=-=-=\\
+
+                if(willBeCollision)
+                {
+                    //console.log("These notes will collide")
+                }
+                else
+                {                    
+                    var tempRect = new fabric.Rect({
+                        left: currX,
+                        top: adjustedY + 1,
+                        fill: 'green',
+                        width: quarterNoteLength,
+                        height: keyboardBlockHeight - 2,
+                        lockMovementY: true,
+                        lockScalingY: true,
+                        lockScalingX: true,
+                        lockRotation: true
+                    });
+
+                    for(var i = 0; i <= canvasHeight; i += keyboardBlockHeight)
+                    {
+                        if(currY <= i)
+                        {
+                            tempRect.set('freq', freqArray[Math.floor(i/keyboardBlockHeight) - 1]);
+                            tempRect.set('arrayIndex', 2);
+                            tempRect.set('noteLength', 4);
+                            break;
+                        }
+                    }
+
+                    //console.log(tempRect);
+
+                    mainCanvas.add(tempRect);
+                }
+            }
+        });
+
+        mainCanvas.on('mouse:over', function(e) {
+            isShapeHover = true;
+            isCanvasHover = false;
+        });
+
+        mainCanvas.on('mouse:out', function(e) {
+            isShapeHover = false;
+            isCanvasHover = true;
+        });
+
+        //borrowed and customized code from official documentation/demo --> http://fabricjs.com/intersection
+        mainCanvas.on({
+            'object:moving': onChange,
+            'object:scaling': onChange,
+        });
+
+        //target is what moved -- "collider"
+        //obj is motionless -- "collidee"
+        function onChange(options) {
+            options.target.setCoords();
+            mainCanvas.forEachObject(function(obj) {
+                if (obj === options.target || obj.get('type') === "line") return;
+                obj.set('opacity' ,options.target.intersectsWithObject(obj) ? 0.5 : 1);
+            });
+        }
+        //end borrowed code
+
+        //draw 'keys' and grid
+        for(var i = 0; i < canvasHeight; i += keyboardBlockHeight)
         {
             var tempRect = new fabric.Textbox(noteArray[noteArray.length - 1], {
                 left: 0,
@@ -147,10 +271,11 @@
                 textAlign: 'center',
                 editable: false,
                 selectable: false,
+                evented: true,
                 fontSize: 15
             });
 
-            tempRect.on('mouseover', function(e) {
+            tempRect.on('mousedown', function(e) {
                 playNoteNoCallBack(noteMap.get(e.target.text), 60 / tempo)
             });
 
@@ -159,7 +284,7 @@
                 stroke: '#ccc'
             }));
 
-            mainCanvas.add(new fabric.Line([0,i,1025,i], {
+            mainCanvas.add(new fabric.Line([0,i,mainCanvas.width,i], {
                 selectable: false,
                 stroke: '#ccc'
             }));
@@ -167,6 +292,15 @@
             noteGroups.push({note: noteArray.pop(), canvasObject: tempRect});
         }
 
+        var playBar = new fabric.Line([0,0,0,mainCanvas.width], {
+            selectable: false,
+            stroke: '#ccc',
+            color: 'red'
+        });
+
+        mainCanvas.add(playBar);
+
+        //add key groups to screen
         for(var i = 0; i < noteGroups.length; i++)
         {
             noteCanvas.add(noteGroups[i].canvasObject);
@@ -175,7 +309,7 @@
         // create web audio api context
         var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        var rawSongData = [['B4',8], ['B4',8], ['F#4/Gb4',8], ['F#4/Gb4',16], ['F#4/Gb4',16], ['A4',8], ['F#4/Gb4',8], ['E4',8], ['F#4/Gb4',8]];
+        var rawSongData = [['B4',8], ['B4',8], ['F#4/Gb4',8], ['F#4/Gb4',16], ['F#4/Gb4',16], ['A4',8], ['F#4/Gb4',8], ['E4',8], ['F#4/Gb4',2]];
         
         var songNotes = [];
 
@@ -203,7 +337,7 @@
         function playNote(frequency, duration, callback) {
             var osc = audioCtx.createOscillator();
             var g = audioCtx.createGain();
-            osc.type = 'square';
+            osc.type = 'sine';
             osc.frequency.value = frequency;
             osc.onended = callback;
             osc.connect(g);
@@ -211,7 +345,8 @@
             g.connect(audioCtx.destination);
             
             osc.start(0);
-            osc.stop(audioCtx.currentTime + duration);                        
+            osc.stop(audioCtx.currentTime + duration);
+            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration + 0.4);                        
         }
 
         function playNoteNoCallBack(frequency, duration) {
@@ -224,11 +359,119 @@
             g.connect(audioCtx.destination);
             
             osc.start(0);
-            osc.stop(audioCtx.currentTime + duration);                        
+            osc.stop(audioCtx.currentTime + duration);
+            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration + 0.4);                  
         }
 
+        // general events
         document.getElementById("clickMe").addEventListener("click", prepSong, false);
 
-    </script>
+        document.onkeydown = function(e) {
 
+            var tempObj = mainCanvas.getActiveObject();
+
+            if(e.keyCode == 46)
+            {
+                mainCanvas.remove(mainCanvas.getActiveObject());
+            }
+            else if(e.keyCode == 189)
+            {
+                if(tempObj.get('type') == 'rect')
+                {
+                    tempObj.set('arrayIndex', ((tempObj.arrayIndex - 1) < 0) ? 0 : tempObj.arrayIndex - 1);
+
+                    tempObj.set('width', notePixelLengths[tempObj.arrayIndex]);
+                    tempObj.set('noteLength', noteDurations[tempObj.arrayIndex]);
+
+                    tempObj.setCoords();
+                    mainCanvas.renderAll();
+                }
+            }
+            else if(e.keyCode == 187)
+            {
+                if(tempObj.get('type') == 'rect')
+                {
+                    tempObj.set('arrayIndex', ((tempObj.arrayIndex + 1) > 4) ? 4 : tempObj.arrayIndex + 1);
+                    tempObj.set('width', notePixelLengths[tempObj.arrayIndex]);
+                    tempObj.set('noteLength', noteDurations[tempObj.arrayIndex]);
+
+                    mainCanvas.forEachObject(function(e) {
+                        if(e.get('type') == "rect" && e != tempObj)
+                        {
+                            if( (tempObj.top >= e.top && tempObj.top <= (e.top + keyboardBlockHeight)) && (tempObj.left < e.left) && ((tempObj.left + tempObj.width) >= e.left) )
+                            {
+                                tempObj.set('arrayIndex', ((tempObj.arrayIndex - 1) < 0) ? 0 : tempObj.arrayIndex - 1);
+                                tempObj.set('width', notePixelLengths[tempObj.arrayIndex]);
+                            }
+                        }
+                    });
+
+                    tempObj.setCoords();
+                    mainCanvas.renderAll();
+                }
+            }
+        }
+
+        document.getElementById("playSong").onclick = async function() {
+
+            totalDuration = 0;
+
+            //get furthest right rectangle
+            mainCanvas.getObjects('rect').forEach(function(e) {
+                if((e.left + e.width) > totalDuration)
+                    totalDuration = (e.left + e.width);
+            });
+
+            totalDuration = (totalDuration / quarterNoteLength) / beatsPerSecond * 1000;
+
+            var json = mainCanvas.toJSON();
+            mainCanvas.selection = false;
+            noteAdditionDisabled = true;
+
+            mainCanvas.getObjects('rect').forEach(function(e) {
+                console.log(e.freq + " " + e.arrayIndex + " " + e.noteLength);
+                e.animate('left', 0, {
+                    onChange: mainCanvas.renderAll.bind(mainCanvas),
+                    onComplete: function() {
+                        playNoteNoCallBack(e.freq, 60 / tempo / (e.noteLength / 4 ));
+                    },
+                    easing: function easeLinear (t, b, c, d) { //easing function from github, needed constant speed animation
+                        return b + (t/d) * c;
+                    },
+                    duration: (e.left / quarterNoteLength) / beatsPerSecond * 1000
+                });
+            }); 
+
+            console.log("");
+            await sleep(totalDuration);
+
+            //reset canvas to just prior to animation
+            mainCanvas.loadFromJSON(json, function() {
+                mainCanvas.renderAll();
+            });
+            mainCanvas.getObjects('rect').forEach(function(e) {
+                e.set('lockMovementY', true);
+                e.set('lockScalingY', true);
+                e.set('lockScalingX', true);
+                e.set('lockRotation', true);
+                for(var i = 0; i <= canvasHeight; i += keyboardBlockHeight)
+                {
+                    if(e.top <= i)
+                    {
+                        e.set('freq', freqArray[Math.floor(i/keyboardBlockHeight) - 1]);
+                        e.set('arrayIndex', notePixelLengths.indexOf(e.width));
+                        e.set('noteLength', noteDurations[notePixelLengths.indexOf(e.width)]);
+                        break;
+                    }
+                }
+            });
+            mainCanvas.getObjects('line').forEach(function(e) {
+                e.set('selectable', false);
+            });
+            //end reset
+
+            mainCanvas.selection = true;
+            noteAdditionDisabled = false;
+        };
+    </script>
 </html>

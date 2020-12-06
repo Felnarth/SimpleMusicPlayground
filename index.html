@@ -68,7 +68,7 @@
         <div class="row align-items-center" style="justify-content: center; padding: 5px;" id="buttonControls">
             <!-- <button id="clickMe" class="btn btn-secondary">Click Me</button> -->
             <button type="button" data-toggle="modal" data-target="#infoModal" class="btn btn-primary">
-                Instructions
+                App Info
             </button>
             <button id="playSong" class="btn btn-success">Play Song</button>
             <div class="dropdown" id="tempoDropdown">
@@ -135,18 +135,23 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="infoModalLabel">Directions</h5>
+                    <h5 class="modal-title" id="infoModalLabel">App Info</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <p>Welcome to the simple music playground!</p>
+                    <p><b>Developed by <i>Aaron Derr</i></b></p>
+                    <p>
+                        This application provides tools for the creation of music. Notes are placed on the canvas below and played back to the user.
+                        Various contrls are provided to customize the music you can create. Continue reading to get instructions on how to use the application
+                    </p>
                     <p>
                         To get started, just start clicking around on the canvas. Whenever you click on the
                         canvas, a green block will appear. This block represents a music 'note' and corresponds to the
                         letter-number combination you see on the left side of the canvas. The size of the block represents
-                        the length of the note to be played. Notes can also be moved side to side by clicking and dragging.To increase 
+                        the length of the note to be played. Notes can also be moved side to side by clicking and dragging. To increase 
                         the length of a note, press the "=" key. To decrease the length of the note, press the "-" key. 
                         Notes can be deleted by clicking on the block then presseing the delete key.
                     </p>
@@ -411,11 +416,15 @@
 
             noteCanvas.add(new fabric.Line([0, i, 100, i], {
                 selectable: false,
+                hasBorders: false,
+                hasControls: false,
                 stroke: '#ccc'
             }));
 
             mainCanvas.add(new fabric.Line([0, i, mainCanvas.width, i], {
                 selectable: false,
+                hasBorders: false,
+                hasControls: false,
                 stroke: '#ccc'
             }));
 
@@ -604,6 +613,8 @@
             });
             mainCanvas.getObjects('line').forEach(function (e) {
                 e.set('selectable', false);
+                e.set('hasBorders', false);
+                e.set('hasControls', false);
             });
             //end reset
 

@@ -1,142 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-        <meta charset="utf-8"/>
-        <title>Simple Music Playground</title>
-        <script src="./doc/fabric.min.js"></script>
 
-        <!--Custom Scrollbar-->
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/simplebar@latest/dist/simplebar.css"
-        />
-        <script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
+<head>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
-        <style>
-            .customCanvasContainer1 {
-                display: inline;
-            }
+    <!-- jQuery and JS bundle w/ Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+        crossorigin="anonymous"></script>
 
-            #canvases .row {
-                width: 1125px;
-            }
+    <meta charset="utf-8" />
+    <title>Simple Music Playground</title>
+    <script src="./doc/fabric.min.js"></script>
 
-            #canvases {
-                padding-right: 0px;
-            }
+    <!--Custom Scrollbar-->
+    <link rel="stylesheet" href="https://unpkg.com/simplebar@latest/dist/simplebar.css" />
+    <script src="https://unpkg.com/simplebar@latest/dist/simplebar.min.js"></script>
 
-            #mainCanvasDiv {
-                margin-left: 100px;
-                width: 1030px;
-                height: 875px;
-            }
+    <style>
+        .customCanvasContainer1 {
+            display: inline;
+        }
 
-            #mainCanvas {
-                border: 1px solid black;
-            }
+        #canvases .row {
+            width: 1125px;
+        }
 
-            #noteLabels {
-                border: 1px solid black;
-            }
-        </style>
-    </head>
+        #canvases {
+            padding-right: 0px;
+        }
 
+        #mainCanvasDiv {
+            margin-left: 100px;
+            width: 1030px;
+            height: 875px;
+        }
+
+        #mainCanvas {
+            border: 1px solid black;
+        }
+
+        #noteLabels {
+            border: 1px solid black;
+        }
+        
+        #buttonControls button {
+            margin-right: 5px
+        }
+    </style>
+</head>
+<div>
     <div class="container">
         <div class="row align-items-center">
             <div class="col">
-                <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="width: 1125px;">
-                    <a class="navbar-brand" href="#">Navbar</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarDropDown" aria-controls="navbarDropDown" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarDropDown">
-                        <ul class="navbar-nav mr-auto">
-                            <!-- <li class="nav-item active">
-                                <a class="nav-link" href="https://www.usca.edu" target="_blank">USCA</a>
-                            </li>
-                            <li class="nav-item font-weight-bold">
-                                <a class="nav-link" href="../index.html#introduction">Link to Introduction Section</a>
-                            </li>
-                            <li class="nav-item font-weight-bold">
-                                <a class="nav-link" href="../index.html#assignments">Link to Assignment Section</a>
-                            </li>
-                            <li class="nav-item font-weight-bold">
-                                <a class="nav-link" href="../index.html#contactInfo">Link to Contact Information</a>
-                            </li> -->
-                        </ul>
+                <div class="card">
+                    <div class="card-body" style="text-align: center;">
+                      <h1>Simple Music Playground</h1>
                     </div>
-                </nav>
-            </div> 
-            <button id="clickMe">Click Me</button>
-            <button id="saveSong">Read comment under this button </button>
-            <button id="playSong">Play Song</button>
-            <!-- Make sure to check for all collisions before saving-->
+                  </div>
+            </div>
+        </div>
+        <div class="row align-items-center" style="justify-content: center; padding: 5px;" id="buttonControls">
+            <button id="clickMe" class="btn btn-secondary">Click Me</button>
+            <button type="button" data-toggle="modal" data-target="#infoModal" class="btn btn-primary">
+                Instructions
+            </button>
+            <button id="playSong" class="btn btn-success">Play Song</button>
+            <button type="button" data-toggle="modal" data-target="#saveSongModal" class="btn btn-secondary">
+                Save Song
+            </button>
+            <div class="dropdown" id="tempoDropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="tempoDropDownBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Tempo Selection
+                </button>
+                <div class="dropdown-menu" aria-labelledby="tempoDropDownBtn" id="tempoDropDownItems">
+                    <a class="dropdown-item">60</a>
+                    <a class="dropdown-item">80</a>
+                    <a class="dropdown-item">100</a>
+                    <a class="dropdown-item">120</a>
+                    <a class="dropdown-item">140</a>
+                </div>
+            </div>
+            <div class="dropdown" id="songDropDownMenu">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="songSelectionDropDownBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Song Selection
+                </button>
+                <div class="dropdown-menu" aria-labelledby="songSelectionDropDownBtn" id="songDropDownItems">
+
+                </div>
+            </div>
+            <!-- <div class="dropdown" id="canvasSizeDropDown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="canvasSizeDropDownBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Canvas Size Selection
+                </button>
+                <div class="dropdown-menu" aria-labelledby="canvasSizeDropDownBtn" id="canvasSizeDropDownItems">
+                    <a class="dropdown-item">1025</a>
+                    <a class="dropdown-item">2000</a>
+                    <a class="dropdown-item">3000</a>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    <div class="modal fade" id="saveSongModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="saveModalLabel">Save Your Song!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="saveForm">
+                        <div class="form-group">
+                            <label for="songNameInput">Song Name</label>
+                            <input type="text" class="form-control" id="songNameInput">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" form="saveForm" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoModalLabel">Directions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Welcome to the simple music playground!</p>
+                    <p>
+                        To get started, just start clicking around on the canvas. Whenever you click on the
+                        canvas, a green block will appear. This block represents a music 'note' and corresponds to the
+                        letter-number combination you see on the left side of the canvas. The size of the block represents
+                        the length of the note to be played. Notes can also be moved side to side by clicking and dragging.To increase the length of a note, press the "=" key. To decrease the
+                        length of the note, press the "-" key. Notes can be deleted by clicking on the 
+                    </p>
+                    <p>
+                        You can test what notes sound like by clicking the letter-number combination labels on the left side of the canvas.
+                        Clicking a label will sample what the note sounds like.
+                    </p>
+                    <p>
+                        When you are ready to play your song, click the "Play Song" button. The notes will begin moving from right to left.
+                        As the note blocks hit the left border, the note will play. Play around with spacing your notes out and changing their size
+
+                        to make different kinds of music!
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
     <div class="container" id="canvases">
         <div>
             <canvas id="noteLabels" width="100px" height="875px"></canvas>
         </div>
-        
-        <div id="mainCanvasDiv" data-simplebar>
-            <canvas id="mainCanvas" width="1025px" height="875px"></canvas> 
-        </div>
-        <!-- <canvas id="noteLabels" width="100px" height="875px"></canvas>
-        <canvas id="mainCanvas" width="1025px" height="875px"></canvas>  -->
-    </div>
 
-    <script>
+        <div id="mainCanvasDiv" data-simplebar>
+            <canvas id="mainCanvas" width="1025px" height="875px"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- -->
+<!-- -=-=-=-=-= FIREBASE =-=-=-=-=- -->
+<!-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- -->
+    	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-firestore.js"></script>
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+	<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-analytics.js"></script>
+<!-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- -->
+<!-- -=-=-=-=-= END FIREBASE =-=-=-=-=- -->
+<!-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- -->
+
+<script>
+
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-=--=-= Globals =-=-=-=-=-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+
         let noteMap = new Map();
-            noteMap.set('C2',65.41)
-            noteMap.set('C#2/Db2',69.30)
-            noteMap.set('D2',73.42)
-            noteMap.set('D#2/Eb2',77.78)
-            noteMap.set('E2',82.41)
-            noteMap.set('F2',87.31)
-            noteMap.set('F#2/Gb2',92.50)
-            noteMap.set('G2',98.00)
-            noteMap.set('G#2/Ab2',103.83)
-            noteMap.set('A2',110.00)
-            noteMap.set('A#2/Bb2',116.54)
-            noteMap.set('B2',123.47)
-            noteMap.set('C3',130.81)
-            noteMap.set('C#3/Db3',138.59)
-            noteMap.set('D3',146.83)
-            noteMap.set('D#3/Eb3',155.56)
-            noteMap.set('E3',164.81)
-            noteMap.set('F3',174.61)
-            noteMap.set('F#3/Gb3',185.00)
-            noteMap.set('G3',196.00)
-            noteMap.set('G#3/Ab3',207.65)
-            noteMap.set('A3',220.00)
-            noteMap.set('A#3/Bb3',233.08)
-            noteMap.set('B3',246.94)
-            noteMap.set('C4',261.63)
-            noteMap.set('C#4/Db4',277.18)
-            noteMap.set('D4',293.66)
-            noteMap.set('D#4/Eb4',311.13)
-            noteMap.set('E4',329.63)
-            noteMap.set('F4',349.23)
-            noteMap.set('F#4/Gb4',369.99)
-            noteMap.set('G4',392.00)
-            noteMap.set('G#4/Ab4',415.30)
-            noteMap.set('A4',440.00)
-            noteMap.set('A#4/Bb4',466.16)
-            noteMap.set('B4',493.88)
-            noteMap.set('C5',523.25)
-            noteMap.set('C#5/Db5',554.37)
-            noteMap.set('D5',587.33)
-            noteMap.set('D#5/Eb5',622.25)
-            noteMap.set('E5',659.25)
-            noteMap.set('F5',698.46)
-            noteMap.set('F#5/Gb5',739.99)
-            noteMap.set('G5',783.99)
-            noteMap.set('G#5/Ab5',830.61)
-            noteMap.set('A5',880.00)
-            noteMap.set('A#5/Bb5',932.33)
-            noteMap.set('B5',987.77)
-            noteMap.set('C6',1046.50)
+        noteMap.set('C2', 65.41)
+        noteMap.set('C#2/Db2', 69.30)
+        noteMap.set('D2', 73.42)
+        noteMap.set('D#2/Eb2', 77.78)
+        noteMap.set('E2', 82.41)
+        noteMap.set('F2', 87.31)
+        noteMap.set('F#2/Gb2', 92.50)
+        noteMap.set('G2', 98.00)
+        noteMap.set('G#2/Ab2', 103.83)
+        noteMap.set('A2', 110.00)
+        noteMap.set('A#2/Bb2', 116.54)
+        noteMap.set('B2', 123.47)
+        noteMap.set('C3', 130.81)
+        noteMap.set('C#3/Db3', 138.59)
+        noteMap.set('D3', 146.83)
+        noteMap.set('D#3/Eb3', 155.56)
+        noteMap.set('E3', 164.81)
+        noteMap.set('F3', 174.61)
+        noteMap.set('F#3/Gb3', 185.00)
+        noteMap.set('G3', 196.00)
+        noteMap.set('G#3/Ab3', 207.65)
+        noteMap.set('A3', 220.00)
+        noteMap.set('A#3/Bb3', 233.08)
+        noteMap.set('B3', 246.94)
+        noteMap.set('C4', 261.63)
+        noteMap.set('C#4/Db4', 277.18)
+        noteMap.set('D4', 293.66)
+        noteMap.set('D#4/Eb4', 311.13)
+        noteMap.set('E4', 329.63)
+        noteMap.set('F4', 349.23)
+        noteMap.set('F#4/Gb4', 369.99)
+        noteMap.set('G4', 392.00)
+        noteMap.set('G#4/Ab4', 415.30)
+        noteMap.set('A4', 440.00)
+        noteMap.set('A#4/Bb4', 466.16)
+        noteMap.set('B4', 493.88)
+        noteMap.set('C5', 523.25)
+        noteMap.set('C#5/Db5', 554.37)
+        noteMap.set('D5', 587.33)
+        noteMap.set('D#5/Eb5', 622.25)
+        noteMap.set('E5', 659.25)
+        noteMap.set('F5', 698.46)
+        noteMap.set('F#5/Gb5', 739.99)
+        noteMap.set('G5', 783.99)
+        noteMap.set('G#5/Ab5', 830.61)
+        noteMap.set('A5', 880.00)
+        noteMap.set('A#5/Bb5', 932.33)
+        noteMap.set('B5', 987.77)
+        noteMap.set('C6', 1046.50)
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCH4jIZa9RALMfiPaK-47LwZgiQ6662b0",
+            authDomain: "simple-music-playground.firebaseapp.com",
+            projectId: "simple-music-playground",
+            storageBucket: "simple-music-playground.appspot.com",
+            messagingSenderId: "940046163744",
+            appId: "1:940046163744:web:9e81ab05211f26c19e8145",
+            measurementId: "G-0C7C0TPCXB"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
 
         var tempo = 140; //beats per minute
         var beatsPerSecond = tempo / 60; //beats per second
@@ -148,61 +266,65 @@
         var quarterNoteLength = 50; //quarter and beat --> length
         var totalDuration = 0;
         var noteAdditionDisabled = false;
-        var notePixelLengths = [25/2, 25, 50, 100, 200];
+        var notePixelLengths = [25 / 2, 25, 50, 100, 200];
         var noteDurations = [16, 8, 4, 2, 1];
 
-        var noteArray = ['G2','G#2/Ab2','A2','A#2/Bb2','B2','C3','C#3/Db3','D3','D#3/Eb3','E3','F3','F#3/Gb3','G3','G#3/Ab3','A3','A#3/Bb3','B3','C4','C#4/Db4','D4','D#4/Eb4','E4','F4','F#4/Gb4','G4','G#4/Ab4','A4','A#4/Bb4','B4','C5','C#5/Db5','D5','D#5/Eb5','E5','F5'];
-        var freqArray = [98.00,103.83,110.00,116.54,123.47,130.81,138.59,146.83,155.56,164.81,174.61,185.00,196.00,207.65,220.00,233.08,246.94,261.63,277.18,293.66,311.13,329.63,349.23,369.99,392.00,415.30,440.00,466.16,493.88,523.25,554.37,587.33,622.25,659.25,698.46].reverse();
+        var noteArray = ['G2', 'G#2/Ab2', 'A2', 'A#2/Bb2', 'B2', 'C3', 'C#3/Db3', 'D3', 'D#3/Eb3', 'E3', 'F3', 'F#3/Gb3', 'G3', 'G#3/Ab3', 'A3', 'A#3/Bb3', 'B3', 'C4', 'C#4/Db4', 'D4', 'D#4/Eb4', 'E4', 'F4', 'F#4/Gb4', 'G4', 'G#4/Ab4', 'A4', 'A#4/Bb4', 'B4', 'C5', 'C#5/Db5', 'D5', 'D#5/Eb5', 'E5', 'F5'];
+        var freqArray = [98.00, 103.83, 110.00, 116.54, 123.47, 130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 185.00, 196.00, 207.65, 220.00, 233.08, 246.94, 261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88, 523.25, 554.37, 587.33, 622.25, 659.25, 698.46].reverse();
         var noteGroups = [];
 
         var noteCanvas = new fabric.Canvas('noteLabels', { selection: false, containerClass: "customCanvasContainer1" });
         var mainCanvas = new fabric.Canvas('mainCanvas', { selection: false, containerClass: "customCanvasContainer2" });
+        mainCanvas.selection = false;
 
         function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-        mainCanvas.on('mouse:down', function(e) {
-            
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-=-=- End Globals =-=-=-=-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-
+
+    
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-=-=- Canvas Events =-=-=-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-
+
+        mainCanvas.on('mouse:down', function (e) {
+
             var currY = e.pointer.y;
             var currX = e.pointer.x;
             var willBeCollision = false;
             var isExistingCollision = false;
 
-            if(isShapeHover || noteAdditionDisabled)
+            if (isShapeHover || noteAdditionDisabled)
             {
-                //console.log("clicked on an existing note")
+                //console.log("clicked on an existing note");
             }
-            else
-            {
+            else {
+
                 //-=-=-= check if the placement of this note will collide with another AND for existing collisions due to resizing -=-=-=\\
                 var rectsToCheck = [];
 
-                mainCanvas.forEachObject(function(e) {
-                    if(e.get('type') == "rect")
-                    {
+                mainCanvas.forEachObject(function (e) {
+                    if (e.get('type') == "rect") {
                         rectsToCheck.push(e);
                     }
                 });
 
-                //console.log(rectsToCheck);
-
                 var adjustedY = Math.floor(currY / keyboardBlockHeight) * keyboardBlockHeight;
 
-                rectsToCheck.forEach(function(e) {
-                    if( (currY >= e.top && currY <= (e.top + keyboardBlockHeight)) && ((currX + quarterNoteLength) >= e.left && (currX + quarterNoteLength) <= (e.left + quarterNoteLength)) )
-                    {
+                rectsToCheck.forEach(function (e) {
+                    if ((currY >= e.top && currY <= (e.top + keyboardBlockHeight)) && ((currX + quarterNoteLength) >= e.left && (currX + quarterNoteLength) <= (e.left + quarterNoteLength))) {
                         willBeCollision = true;
                     }
                 });
                 //-=-=-= end of collision check -=-=-=\\
 
-                if(willBeCollision)
-                {
-                    //console.log("These notes will collide")
+                if (willBeCollision) {
+                    console.log("These notes will collide")
                 }
-                else
-                {                    
+                else {
                     var tempRect = new fabric.Rect({
                         left: currX,
                         top: adjustedY + 1,
@@ -215,30 +337,26 @@
                         lockRotation: true
                     });
 
-                    for(var i = 0; i <= canvasHeight; i += keyboardBlockHeight)
-                    {
-                        if(currY <= i)
-                        {
-                            tempRect.set('freq', freqArray[Math.floor(i/keyboardBlockHeight) - 1]);
+                    for (var i = 0; i <= canvasHeight; i += keyboardBlockHeight) {
+                        if (currY <= i) {
+                            tempRect.set('freq', freqArray[Math.floor(i / keyboardBlockHeight) - 1]);
                             tempRect.set('arrayIndex', 2);
                             tempRect.set('noteLength', 4);
                             break;
                         }
                     }
 
-                    //console.log(tempRect);
-
                     mainCanvas.add(tempRect);
                 }
             }
         });
 
-        mainCanvas.on('mouse:over', function(e) {
+        mainCanvas.on('mouse:over', function (e) {
             isShapeHover = true;
             isCanvasHover = false;
         });
 
-        mainCanvas.on('mouse:out', function(e) {
+        mainCanvas.on('mouse:out', function (e) {
             isShapeHover = false;
             isCanvasHover = true;
         });
@@ -253,20 +371,28 @@
         //obj is motionless -- "collidee"
         function onChange(options) {
             options.target.setCoords();
-            mainCanvas.forEachObject(function(obj) {
+            mainCanvas.forEachObject(function (obj) {
                 if (obj === options.target || obj.get('type') === "line") return;
-                obj.set('opacity' ,options.target.intersectsWithObject(obj) ? 0.5 : 1);
+                obj.set('opacity', options.target.intersectsWithObject(obj) ? 0.5 : 1);
             });
         }
         //end borrowed code
 
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-= End Canvas Events -=-=-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-
+
+
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-=-=- Canvas Prep =-=-=-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-
+
         //draw 'keys' and grid
-        for(var i = 0; i < canvasHeight; i += keyboardBlockHeight)
-        {
+        for (var i = 0; i < canvasHeight; i += keyboardBlockHeight) {
             var tempRect = new fabric.Textbox(noteArray[noteArray.length - 1], {
                 left: 0,
                 top: i,
-                originX: 'left', 
+                originX: 'left',
                 originY: 'top',
                 textAlign: 'center',
                 editable: false,
@@ -275,24 +401,24 @@
                 fontSize: 15
             });
 
-            tempRect.on('mousedown', function(e) {
+            tempRect.on('mousedown', function (e) {
                 playNoteNoCallBack(noteMap.get(e.target.text), 60 / tempo)
             });
 
-            noteCanvas.add(new fabric.Line([0,i,100,i], {
+            noteCanvas.add(new fabric.Line([0, i, 100, i], {
                 selectable: false,
                 stroke: '#ccc'
             }));
 
-            mainCanvas.add(new fabric.Line([0,i,mainCanvas.width,i], {
+            mainCanvas.add(new fabric.Line([0, i, mainCanvas.width, i], {
                 selectable: false,
                 stroke: '#ccc'
             }));
-            
-            noteGroups.push({note: noteArray.pop(), canvasObject: tempRect});
+
+            noteGroups.push({ note: noteArray.pop(), canvasObject: tempRect });
         }
 
-        var playBar = new fabric.Line([0,0,0,mainCanvas.width], {
+        var playBar = new fabric.Line([0, 0, 0, mainCanvas.width], {
             selectable: false,
             stroke: '#ccc',
             color: 'red'
@@ -301,36 +427,39 @@
         mainCanvas.add(playBar);
 
         //add key groups to screen
-        for(var i = 0; i < noteGroups.length; i++)
-        {
+        for (var i = 0; i < noteGroups.length; i++) {
             noteCanvas.add(noteGroups[i].canvasObject);
         }
 
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-=- End Canvas Prep =-=-=-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-
+
+
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-=-=- Sound functions =-=-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+
         // create web audio api context
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var audioCtx;
 
-        var rawSongData = [['B4',8], ['B4',8], ['F#4/Gb4',8], ['F#4/Gb4',16], ['F#4/Gb4',16], ['A4',8], ['F#4/Gb4',8], ['E4',8], ['F#4/Gb4',2]];
-        
+        var rawSongData = [['B4', 8], ['B4', 8], ['F#4/Gb4', 8], ['F#4/Gb4', 16], ['F#4/Gb4', 16], ['A4', 8], ['F#4/Gb4', 8], ['E4', 8], ['F#4/Gb4', 2]];
+
         var songNotes = [];
-
-        //songNotes.reverse();
 
         function prepSong() {
             var tempArray = [...rawSongData];
-            while(tempArray.length > 0)
-            {
+            while (tempArray.length > 0) {
                 temp = tempArray.pop();
                 songNotes.push([noteMap.get(temp[0]), temp[1]]);
-            }           
-
-            //songNotes.reverse();
+            }
             playSong();
         }
-        //(256 / (note[1] * tempo))
+
         function playSong() {
-            if(songNotes.length > 0) {
+            if (songNotes.length > 0) {
                 note = songNotes.pop();
-                playNote(note[0], 60 / tempo / (note[1] / 4 ), playSong);
+                playNote(note[0], 60 / tempo / (note[1] / 4), playSong);
             }
         }
 
@@ -343,13 +472,16 @@
             osc.connect(g);
             g.gain.value = 0.15;
             g.connect(audioCtx.destination);
-            
+
             osc.start(0);
             osc.stop(audioCtx.currentTime + duration);
-            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration + 0.4);                        
+            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration + 0.4);
         }
 
         function playNoteNoCallBack(frequency, duration) {
+            if(audioCtx == null)
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
             var osc = audioCtx.createOscillator();
             var g = audioCtx.createGain();
             osc.type = 'sine';
@@ -357,27 +489,33 @@
             osc.connect(g);
             g.gain.value = 0.15;
             g.connect(audioCtx.destination);
-            
+
             osc.start(0);
             osc.stop(audioCtx.currentTime + duration);
-            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration + 0.4);                  
+            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration + 0.4);
         }
 
-        // general events
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-=- End Sound functions =-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+
+
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-=-=-= General Events =-=-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+
         document.getElementById("clickMe").addEventListener("click", prepSong, false);
 
-        document.onkeydown = function(e) {
+        // allows for scaling of notes on canvas. (make notes longer or shorter)
+        document.onkeydown = function (e) {
 
             var tempObj = mainCanvas.getActiveObject();
 
-            if(e.keyCode == 46)
-            {
+            if (e.keyCode == 46) {
                 mainCanvas.remove(mainCanvas.getActiveObject());
             }
-            else if(e.keyCode == 189)
-            {
-                if(tempObj.get('type') == 'rect')
-                {
+            else if (e.keyCode == 189) {
+                if (tempObj.get('type') == 'rect') {
                     tempObj.set('arrayIndex', ((tempObj.arrayIndex - 1) < 0) ? 0 : tempObj.arrayIndex - 1);
 
                     tempObj.set('width', notePixelLengths[tempObj.arrayIndex]);
@@ -387,19 +525,15 @@
                     mainCanvas.renderAll();
                 }
             }
-            else if(e.keyCode == 187)
-            {
-                if(tempObj.get('type') == 'rect')
-                {
+            else if (e.keyCode == 187) {
+                if (tempObj.get('type') == 'rect') {
                     tempObj.set('arrayIndex', ((tempObj.arrayIndex + 1) > 4) ? 4 : tempObj.arrayIndex + 1);
                     tempObj.set('width', notePixelLengths[tempObj.arrayIndex]);
                     tempObj.set('noteLength', noteDurations[tempObj.arrayIndex]);
 
-                    mainCanvas.forEachObject(function(e) {
-                        if(e.get('type') == "rect" && e != tempObj)
-                        {
-                            if( (tempObj.top >= e.top && tempObj.top <= (e.top + keyboardBlockHeight)) && (tempObj.left < e.left) && ((tempObj.left + tempObj.width) >= e.left) )
-                            {
+                    mainCanvas.forEachObject(function (e) {
+                        if (e.get('type') == "rect" && e != tempObj) {
+                            if ((tempObj.top >= e.top && tempObj.top <= (e.top + keyboardBlockHeight)) && (tempObj.left < e.left) && ((tempObj.left + tempObj.width) >= e.left)) {
                                 tempObj.set('arrayIndex', ((tempObj.arrayIndex - 1) < 0) ? 0 : tempObj.arrayIndex - 1);
                                 tempObj.set('width', notePixelLengths[tempObj.arrayIndex]);
                             }
@@ -412,13 +546,14 @@
             }
         }
 
-        document.getElementById("playSong").onclick = async function() {
+        document.getElementById("playSong").onclick = async function () {
 
             totalDuration = 0;
+            this.disabled = true;
 
             //get furthest right rectangle
-            mainCanvas.getObjects('rect').forEach(function(e) {
-                if((e.left + e.width) > totalDuration)
+            mainCanvas.getObjects('rect').forEach(function (e) {
+                if ((e.left + e.width) > totalDuration)
                     totalDuration = (e.left + e.width);
             });
 
@@ -428,50 +563,191 @@
             mainCanvas.selection = false;
             noteAdditionDisabled = true;
 
-            mainCanvas.getObjects('rect').forEach(function(e) {
-                console.log(e.freq + " " + e.arrayIndex + " " + e.noteLength);
+            mainCanvas.getObjects('rect').forEach(function (e) {
                 e.animate('left', 0, {
                     onChange: mainCanvas.renderAll.bind(mainCanvas),
-                    onComplete: function() {
-                        playNoteNoCallBack(e.freq, 60 / tempo / (e.noteLength / 4 ));
+                    onComplete: function () {
+                        playNoteNoCallBack(e.freq, 60 / tempo / (e.noteLength / 4));
                     },
-                    easing: function easeLinear (t, b, c, d) { //easing function from github, needed constant speed animation
-                        return b + (t/d) * c;
+                    easing: function easeLinear(t, b, c, d) { //easing function from github, needed constant speed animation
+                        return b + (t / d) * c;
                     },
                     duration: (e.left / quarterNoteLength) / beatsPerSecond * 1000
                 });
-            }); 
+            });
 
-            console.log("");
             await sleep(totalDuration);
 
             //reset canvas to just prior to animation
-            mainCanvas.loadFromJSON(json, function() {
+            mainCanvas.loadFromJSON(json, function () {
                 mainCanvas.renderAll();
             });
-            mainCanvas.getObjects('rect').forEach(function(e) {
+            mainCanvas.getObjects('rect').forEach(function (e) {
                 e.set('lockMovementY', true);
                 e.set('lockScalingY', true);
                 e.set('lockScalingX', true);
                 e.set('lockRotation', true);
-                for(var i = 0; i <= canvasHeight; i += keyboardBlockHeight)
-                {
-                    if(e.top <= i)
-                    {
-                        e.set('freq', freqArray[Math.floor(i/keyboardBlockHeight) - 1]);
+                for (var i = 0; i <= canvasHeight; i += keyboardBlockHeight) {
+                    if (e.top <= i) {
+                        e.set('freq', freqArray[Math.floor(i / keyboardBlockHeight) - 1]);
                         e.set('arrayIndex', notePixelLengths.indexOf(e.width));
                         e.set('noteLength', noteDurations[notePixelLengths.indexOf(e.width)]);
                         break;
                     }
                 }
             });
-            mainCanvas.getObjects('line').forEach(function(e) {
+            mainCanvas.getObjects('line').forEach(function (e) {
                 e.set('selectable', false);
             });
             //end reset
 
             mainCanvas.selection = true;
             noteAdditionDisabled = false;
+            this.disabled = false;
         };
-    </script>
+
+        /*
+            Event fired when the save form (located on modal). This event saves all necessary data off of the canvas 
+            and saves it in firestore under the chosen name
+        */
+        $('#saveForm').submit(function(e) {
+            e.preventDefault();
+
+            var songName = $('#songNameInput').val();
+            var isCollision = false;
+
+            if(songName == "")
+            {
+                window.alert("Please enter a name for your song");
+            }
+            else
+            {
+                var noteBlocks = [];
+
+                mainCanvas.getObjects('rect').forEach(function(e){
+                    if(e.opacity == 0.5)
+                        isCollision = true;
+
+                    noteBlocks.push(
+                        {
+                            arrayIndex: e.arrayIndex,
+                            left: e.left,
+                            noteLength: e.noteLength,
+                            top: e.top,
+                            width: e.width,
+                            freq: e.freq
+                        }
+                    );
+                });
+
+                if(isCollision)
+                {
+                    window.alert("Please fix all collisions. (Light Green)");
+                    this.reset();
+                    $('#saveSongModal').modal('hide');
+                    return;
+                }
+
+                firebase.firestore().collection("Songs").where("SongName", "==", $(this).text())
+                .get()
+                .then(function(querySnapshot) {
+                    if(querySnapshot.docs.lengh != 0)
+                    {
+                        window.alert("That name is taken");
+                        this.reset();
+                        $('#saveSongModal').modal('hide');
+                        return;
+                    }
+                });           
+
+                firebase.firestore().collection("Songs").add(
+                    {
+                        SongName: songName,
+                        noteBlocks: noteBlocks,
+                        tempo: tempo
+                    }
+                )
+                .then(success => {console.log("success");})
+                .catch(error => {console.log(error.message);});
+
+                this.reset();
+                $('#saveSongModal').modal('hide');
+            }
+        });
+
+        /*
+            Event fired when dropdown is opened by user. Ths event goes to firestore, retrieves all songs, and presents them as options
+            to the user. When a song is selected from the dropdown, the song data is loaded onto the cavas to allow play.
+        */
+        $('#songDropDownMenu').on('show.bs.dropdown', function () {
+
+            firebase.firestore().collection("Songs").get().then(function(querySnapshot) {
+
+                var tempHtml = "";
+
+                querySnapshot.docs.forEach(element => {
+                    tempHtml += "<a class=\"dropdown-item\" href=\"#\">" + element.data().SongName + "</a>";
+                });
+
+                $('#songDropDownItems').html(tempHtml);
+
+                //event tied to each option in the dropdown
+                $('#songDropDownItems a').on('click', function(e) {
+                    e.preventDefault();
+
+                    var dbData;
+
+                    firebase.firestore().collection("Songs").where("SongName", "==", $(this).text())
+                    .get()
+                    .then(function(querySnapshot) {
+                        querySnapshot.forEach(function(doc) {
+                            dbData = doc.data();
+                        });
+                        
+                        console.log(dbData);
+
+                        mainCanvas.set('width', dbData.canvasSize);
+                        tempo = dbData.tempo;
+                        dbData.noteBlocks.forEach(function(e) {
+                            var tempRect = new fabric.Rect({
+                                left: e.left,
+                                top: e.top,
+                                fill: 'green',
+                                width: e.width,
+                                height: keyboardBlockHeight - 2,
+                                lockMovementY: true,
+                                lockScalingY: true,
+                                lockScalingX: true,
+                                lockRotation: true
+                            });
+
+                            tempRect.set('freq', e.freq);
+                            tempRect.set('arrayIndex', e.arrayIndex);
+                            tempRect.set('noteLength', e.noteLength);
+
+                            mainCanvas.add(tempRect);
+                        });
+
+                    });                
+                });
+            });
+        });
+
+        $('#tempoDropDownItems a').on('click', function(e) {
+            e.preventDefault();
+            tempo = parseInt($(this).text());
+            beatsPerSecond = tempo / 60; //beats per second
+        });
+
+        // $('#canvasSizeDropDownItems a').on('click', function(e) {
+        //     e.preventDefault();
+        //     mainCanvas.set('width', parseInt($(this).text()));
+        //     mainCanvas.renderAll();
+        // });
+
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+    //-- -=-=-= End General Events =-=-=-=-
+    //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
+</script>
+
 </html>

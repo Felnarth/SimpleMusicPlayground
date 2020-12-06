@@ -336,7 +336,9 @@
                         lockMovementY: true,
                         lockScalingY: true,
                         lockScalingX: true,
-                        lockRotation: true
+                        lockRotation: true,
+                        hasBorders: false,
+                        hasControls: false,
                     });
 
                     for (var i = 0; i <= canvasHeight; i += keyboardBlockHeight) {
@@ -589,6 +591,8 @@
                 e.set('lockScalingY', true);
                 e.set('lockScalingX', true);
                 e.set('lockRotation', true);
+                e.set('hasControls', false);
+                e.set('hasBorders', false);
                 for (var i = 0; i <= canvasHeight; i += keyboardBlockHeight) {
                     if (e.top <= i) {
                         e.set('freq', freqArray[Math.floor(i / keyboardBlockHeight) - 1]);
@@ -731,7 +735,9 @@
                                 lockMovementY: true,
                                 lockScalingY: true,
                                 lockScalingX: true,
-                                lockRotation: true
+                                lockRotation: true,
+                                hasBorders: false,
+                                hasControls: false
                             });
 
                             tempRect.set('freq', e.freq);

@@ -66,14 +66,11 @@
             </div>
         </div>
         <div class="row align-items-center" style="justify-content: center; padding: 5px;" id="buttonControls">
-            <button id="clickMe" class="btn btn-secondary">Click Me</button>
+            <!-- <button id="clickMe" class="btn btn-secondary">Click Me</button> -->
             <button type="button" data-toggle="modal" data-target="#infoModal" class="btn btn-primary">
                 Instructions
             </button>
             <button id="playSong" class="btn btn-success">Play Song</button>
-            <button type="button" data-toggle="modal" data-target="#saveSongModal" class="btn btn-secondary">
-                Save Song
-            </button>
             <div class="dropdown" id="tempoDropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="tempoDropDownBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Tempo Selection
@@ -94,6 +91,10 @@
 
                 </div>
             </div>
+            <button type="button" data-toggle="modal" data-target="#saveSongModal" class="btn btn-secondary">
+                Save Song
+            </button>
+            <button id="clearCanvas" class="btn btn-danger">Clear Canvas</button>
             <!-- <div class="dropdown" id="canvasSizeDropDown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="canvasSizeDropDownBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Canvas Size Selection
@@ -145,8 +146,9 @@
                         To get started, just start clicking around on the canvas. Whenever you click on the
                         canvas, a green block will appear. This block represents a music 'note' and corresponds to the
                         letter-number combination you see on the left side of the canvas. The size of the block represents
-                        the length of the note to be played. Notes can also be moved side to side by clicking and dragging.To increase the length of a note, press the "=" key. To decrease the
-                        length of the note, press the "-" key. Notes can be deleted by clicking on the 
+                        the length of the note to be played. Notes can also be moved side to side by clicking and dragging.To increase 
+                        the length of a note, press the "=" key. To decrease the length of the note, press the "-" key. 
+                        Notes can be deleted by clicking on the block then presseing the delete key.
                     </p>
                     <p>
                         You can test what notes sound like by clicking the letter-number combination labels on the left side of the canvas.
@@ -164,27 +166,27 @@
     </div>
     <div class="container" id="canvases">
         <div>
-            <canvas id="noteLabels" width="100px" height="875px"></canvas>
+            <canvas id="noteLabels" width="100" height="875"></canvas>
         </div>
 
         <div id="mainCanvasDiv" data-simplebar>
-            <canvas id="mainCanvas" width="1025px" height="875px"></canvas>
+            <canvas id="mainCanvas" width="1025" height="875"></canvas>
         </div>
     </div>
 </div>
 
-<!-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- -->
+<!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <!-- -=-=-=-=-= FIREBASE =-=-=-=-=- -->
-<!-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- -->
+<!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
     	<!-- The core Firebase JS SDK is always required and must be listed first -->
 	<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-firestore.js"></script>
     <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
 	<script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-analytics.js"></script>
-<!-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- -->
+<!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <!-- -=-=-=-=-= END FIREBASE =-=-=-=-=- -->
-<!-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- -->
+<!-- -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 
 <script>
 
@@ -447,36 +449,36 @@
 
         var songNotes = [];
 
-        function prepSong() {
-            var tempArray = [...rawSongData];
-            while (tempArray.length > 0) {
-                temp = tempArray.pop();
-                songNotes.push([noteMap.get(temp[0]), temp[1]]);
-            }
-            playSong();
-        }
+        // function prepSong() {
+        //     var tempArray = [...rawSongData];
+        //     while (tempArray.length > 0) {
+        //         temp = tempArray.pop();
+        //         songNotes.push([noteMap.get(temp[0]), temp[1]]);
+        //     }
+        //     playSong();
+        // }
 
-        function playSong() {
-            if (songNotes.length > 0) {
-                note = songNotes.pop();
-                playNote(note[0], 60 / tempo / (note[1] / 4), playSong);
-            }
-        }
+        // function playSong() {
+        //     if (songNotes.length > 0) {
+        //         note = songNotes.pop();
+        //         playNote(note[0], 60 / tempo / (note[1] / 4), playSong);
+        //     }
+        // }
 
-        function playNote(frequency, duration, callback) {
-            var osc = audioCtx.createOscillator();
-            var g = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = frequency;
-            osc.onended = callback;
-            osc.connect(g);
-            g.gain.value = 0.15;
-            g.connect(audioCtx.destination);
+        // function playNote(frequency, duration, callback) {
+        //     var osc = audioCtx.createOscillator();
+        //     var g = audioCtx.createGain();
+        //     osc.type = 'sine';
+        //     osc.frequency.value = frequency;
+        //     osc.onended = callback;
+        //     osc.connect(g);
+        //     g.gain.value = 0.15;
+        //     g.connect(audioCtx.destination);
 
-            osc.start(0);
-            osc.stop(audioCtx.currentTime + duration);
-            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration + 0.4);
-        }
+        //     osc.start(0);
+        //     osc.stop(audioCtx.currentTime + duration);
+        //     g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration + 0.4);
+        // }
 
         function playNoteNoCallBack(frequency, duration) {
             if(audioCtx == null)
@@ -504,7 +506,7 @@
     //-- -=-=-=-=-= General Events =-=-=-=-
     //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
 
-        document.getElementById("clickMe").addEventListener("click", prepSong, false);
+        //document.getElementById("clickMe").addEventListener("click", prepSong, false);
 
         // allows for scaling of notes on canvas. (make notes longer or shorter)
         document.onkeydown = function (e) {
@@ -560,7 +562,7 @@
             totalDuration = (totalDuration / quarterNoteLength) / beatsPerSecond * 1000;
 
             var json = mainCanvas.toJSON();
-            mainCanvas.selection = false;
+            //mainCanvas.selection = false;
             noteAdditionDisabled = true;
 
             mainCanvas.getObjects('rect').forEach(function (e) {
@@ -601,7 +603,7 @@
             });
             //end reset
 
-            mainCanvas.selection = true;
+            //mainCanvas.selection = true;
             noteAdditionDisabled = false;
             this.disabled = false;
         };
@@ -647,14 +649,21 @@
                     $('#saveSongModal').modal('hide');
                     return;
                 }
+                else if(noteBlocks.length == 0)
+                {
+                    window.alert("Don't save an empty song, silly!");
+                    this.reset();
+                    $('#saveSongModal').modal('hide');
+                    return;
+                }
 
                 firebase.firestore().collection("Songs").where("SongName", "==", $(this).text())
                 .get()
                 .then(function(querySnapshot) {
-                    if(querySnapshot.docs.lengh != 0)
+                    if(querySnapshot.docs.length != 0)
                     {
                         window.alert("That name is taken");
-                        this.reset();
+                        $('#saveForm').reset();
                         $('#saveSongModal').modal('hide');
                         return;
                     }
@@ -695,6 +704,10 @@
                 $('#songDropDownItems a').on('click', function(e) {
                     e.preventDefault();
 
+                    mainCanvas.getObjects('rect').forEach(function(e) {
+                        mainCanvas.remove(e);
+                    });
+
                     var dbData;
 
                     firebase.firestore().collection("Songs").where("SongName", "==", $(this).text())
@@ -704,9 +717,9 @@
                             dbData = doc.data();
                         });
                         
-                        console.log(dbData);
+                        //console.log(dbData);
 
-                        mainCanvas.set('width', dbData.canvasSize);
+                        //mainCanvas.set('width', dbData.canvasSize);
                         tempo = dbData.tempo;
                         dbData.noteBlocks.forEach(function(e) {
                             var tempRect = new fabric.Rect({
@@ -727,7 +740,7 @@
 
                             mainCanvas.add(tempRect);
                         });
-
+                        //mainCanvas.renderAll();
                     });                
                 });
             });
@@ -739,11 +752,11 @@
             beatsPerSecond = tempo / 60; //beats per second
         });
 
-        // $('#canvasSizeDropDownItems a').on('click', function(e) {
-        //     e.preventDefault();
-        //     mainCanvas.set('width', parseInt($(this).text()));
-        //     mainCanvas.renderAll();
-        // });
+        $('#clearCanvas').click(function(e) {
+            mainCanvas.getObjects('rect').forEach(function(e) {
+                mainCanvas.remove(e);
+            });
+        });
 
     //-- -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=- 
     //-- -=-=-= End General Events =-=-=-=-
